@@ -13,15 +13,16 @@
  task-list->string
  task-list->json-serializable
  read-json-tasks
- with-db-connection
- maybe-create-user)
+ maybe-create-user
+ db-connection)
 
 (import chicken scheme ports srfi-1 srfi-13 data-structures extras)
 (require-library regex)
 (import irregex)
 (use matchable postgresql sql-null spiffy srfi-18 medea)
+(use awful)
 (use downtime)
-(use pox-db pox-db/helpers)
+(use pox-db/helpers)
 (use pox-notification)
 (use pox-log)
 
@@ -257,39 +258,37 @@
 (define (notify-users user-id changes)
   (unless (null? changes)
     (thread-start!
-     (lambda ()
-       (with-db-connection
-        (lambda ()
-          (let ((notifyees (group-changes-by-notifyees user-id changes))
-                (user-notifications (select-user-notifications)))
-            (for-each (lambda (notifyee/changes)
-                        (and-let* ((notifyee (car notifyee/changes))
-                                   (changes (cdr notifyee/changes))
-                                   (notifications (alist-ref notifyee user-notifications))
-                                   (notifyee (user-id->name notifyee))
-                                   (user (user-id->name user-id)))
-                          (log (info notification) 
-                               (cons 'user user)
-                               (cons 'notifyee notifyee))
-                          (for-each (lambda (n)
-                                      (log (debug notification)
-                                           (cons 'notification (cdr n))
-                                           (cons 'changes changes))
-                                      (thread-start!
-                                       (lambda ()
-                                         (condition-case
-                                             ((car n)
-                                              user
-                                              notifyee
-                                              (alist-ref 'params (cdr n))
-                                              changes)
-                                           (exn () (log-to (error-log)
-                                                           "Error with notification ~A for ~A: ~S"
-                                                           (alist-ref 'id (cdr n))
-                                                           user
-                                                           (format-error exn)))))))
-                                    notifications)))
-                      notifyees))))))))
+      (lambda ()
+        (let ((notifyees (group-changes-by-notifyees user-id changes))
+              (user-notifications (select-user-notifications)))
+          (for-each (lambda (notifyee/changes)
+                      (and-let* ((notifyee (car notifyee/changes))
+                                 (changes (cdr notifyee/changes))
+                                 (notifications (alist-ref notifyee user-notifications))
+                                 (notifyee (user-id->name notifyee))
+                                 (user (user-id->name user-id)))
+                        (log (info notification) 
+                             (cons 'user user)
+                             (cons 'notifyee notifyee))
+                        (for-each (lambda (n)
+                                    (log (debug notification)
+                                         (cons 'notification (cdr n))
+                                         (cons 'changes changes))
+                                    (thread-start!
+                                      (lambda ()
+                                        (condition-case
+                                          ((car n)
+                                           user
+                                           notifyee
+                                           (alist-ref 'params (cdr n))
+                                           changes)
+                                          (exn () (log-to (error-log)
+                                                          "Error with notification ~A for ~A: ~S"
+                                                          (alist-ref 'id (cdr n))
+                                                          user
+                                                          (format-error exn)))))))
+                                  notifications)))
+                    notifyees))))))
 
 (define (row-task row #!optional remove-sql-nulls? (num 0))
   (let* ((task (row-alist row num))

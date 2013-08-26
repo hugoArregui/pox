@@ -2,8 +2,9 @@
  (author "Moritz Heidkamp")
  (category tools)
  (license "GPL")
- (needs intarweb uri-common matchable getopt-long pool postgresql hato log5scm
+;hato 
+ (needs intarweb uri-common matchable getopt-long pool postgresql log5scm
         medea spiffy-request-vars spiffy-uri-match spiffy ssql ssql-postgresql
         sxml-transforms spiffy-session spiffy-auth spiffy-system spiffy-chain
-        format-text-diff sexpressive)
+        format-textdiff sexpressive)
  (text-depends test))

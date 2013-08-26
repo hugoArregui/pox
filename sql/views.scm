@@ -1,8 +1,15 @@
-(load-relative "../pox.system")
-(load-system pox)
+;(load-relative "../pox.system")
+;(load-system pox)
+
+;(use postgresql ssql ssql-postgresql)
+;(use pox-db pox-db/helpers)
 
 (use postgresql ssql ssql-postgresql)
-(use pox-db pox-db/helpers)
+(use pox-db/helpers)
+
+(unless (db-connection)
+  (load-relative "../settings")
+  (db-connection (connect db-connection-spec)))
 
 (define task-query-columns
   '(id created_at revision name description priority done category assignee_id assigner_id creator_id updater_id))
@@ -51,10 +58,6 @@
                    tasks_with_tags))
               (group . ,columns))
             tasks)))))
-
-(unless (db-connection)
-  (load-relative "../init")
-  (db-connection (connect (db-connection-spec))))
 
 (with-transaction (db-connection)
   (lambda ()

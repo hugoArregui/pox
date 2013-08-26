@@ -6,10 +6,11 @@
  db-compose-query
  db-select
  db-select-one
- result->alists)
+ result->alists
+ db-connection)
 
 (import chicken scheme data-structures extras)
-(use srfi-1 postgresql pox-db pox-log ssql)
+(use srfi-1 postgresql pox-log ssql awful)
 (require-library ssql-postgresql)
 
 (define-logger log db)

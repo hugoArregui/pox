@@ -1,3 +1,5 @@
+;; vim: filetype=scheme
+
 (use system coops srfi-1)
 
 (define-method (rebuild-file after: (sf <scheme-file>))
@@ -20,9 +22,9 @@
                           (system-components pox))))
  '((version "0.0.1")))
 
-(compile start-pox-server.scm -o pox-server)
+;(compile start-pox-server.scm -o pox-server)
 
-(install-program
- 'pox-server-cmd
- '("pox-server")
- `((version "0.0.1")))
+;(install-program
+ ;'pox-server-cmd
+ ;'("pox-server")
+ ;`((version "0.0.1")))

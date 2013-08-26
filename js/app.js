@@ -123,18 +123,19 @@ $(function() {
             data: data,
             contentType: "text/x-downtime",
             beforeSend: function(request) {
-	        request.setRequestHeader("Accept", "text/x-downtime");
+                request.setRequestHeader("Accept", "text/x-downtime");
             },
             error: function(request, status) {
-	            handleRequestError(request, status);
+                handleRequestError(request, status);
 
-	            if (request.status == 409) {
-	                tasks.find("textarea").val(request.responseText);
-	            }
+                console.log(request.responseText);
+                if (request.status == 409) {
+                    tasks.find("textarea").val(request.responseText);
+                }
             },
             success: function() {
-	            showMessage("Saved!", "success");
-	            refresh();
+                showMessage("Saved!", "success");
+                refresh();
             }
         });
     }

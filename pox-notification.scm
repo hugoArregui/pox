@@ -3,7 +3,7 @@
 (register-notification-handler notification-ref notification-initialize change->notification)
 
 (import chicken scheme)
-(use data-structures extras postgresql downtime pox-db pox-db/helpers pox-log)
+(use data-structures extras postgresql downtime pox-db/helpers pox-log awful)
 
 (define-logger log notification)
 
@@ -14,16 +14,14 @@
 
 (define (notification-initialize)
   (log (info) "initializing notification handlers")
-  (with-db-connection
-   (lambda ()
-     (for-each (lambda (handler)
-                 (log (debug) "notification handler: ~A" handler)
-                 (condition-case
-                     (unless (db-select-one 'notification_handlers 'name handler 'id)
-                       (query (db-connection) "INSERT INTO notification_handlers (name) VALUES ($1)" handler))
-                   (exn (postgresql) (unless (string=? "23505" (get-condition-property exn 'postgresql 'error-code))
-                                       (signal exn)))))
-               (map (compose symbol->string car) notification-handlers)))))
+  (for-each (lambda (handler)
+              (log (debug) "notification handler: ~A" handler)
+              (condition-case
+                (unless (db-select-one 'notification_handlers 'name handler 'id)
+                  (query (db-connection) "INSERT INTO notification_handlers (name) VALUES ($1)" handler))
+                (exn (postgresql) (unless (string=? "23505" (get-condition-property exn 'postgresql 'error-code))
+                                    (signal exn)))))
+            (map (compose symbol->string car) notification-handlers)))
 
 (define (change->notification user notifyee change)
   (sprintf "~A: ~A"

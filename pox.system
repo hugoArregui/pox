@@ -1,18 +1,41 @@
+;; vim: filetype=scheme
 (use system)
+
+;(define-system pox
+  ;(scheme-file "pox" depends: '("pox-model" "pox-log"))
+  ;(scheme-file "pox-model" depends: '("pox-log") path: "scm/pox-model.scm")
+  ;(scheme-file "pox-log" path: "scm/pox-log.scm")
+  ;(scheme-file "downtime" path: "scm/downtime.scm"))
+
+;(define-system pox
+  ;(scheme-file "downtime" path: "scm/downtime.scm")
+  ;(scheme-file "pox-db" path: "scm/pox-db.scm")
+  ;(scheme-file "pox-notification" depends: '("pox-db" "pox-db/helpers" "downtime") path: "scm/pox-notification.scm")
+  ;(scheme-file "pox-model" depends: '("pox-db" "pox-db/helpers" "pox-notification" "downtime") path: "scm/pox-model.scm")
+  ;(file "web" includes: '("sxml"))
+  ;(scheme-file "pox-log" path: "scm/pox-log.scm")
+  ;(scheme-file "pox-query" path: "scm/pox-query.scm")
+  ;;(scheme-file "pox-server"
+               ;;depends: '("pox-model" "pox-db/helpers" "pox-auth" "pox-log" "pox-query")
+               ;;includes: '("web"))
+  ;(scheme-file "pox-db/helpers" depends: '("pox-db" "pox-log") path: "scm/pox-db/helpers.scm")
+  ;;(scheme-file "pox-auth" path: "pox-auth)
+  ;(scheme-file "pox-mail" path: "scm/pox-mail")
+  ;(scheme-file "pox-mail/sendmail" path: "scm/pox-mail/sendmail.scm")
+  ;(scheme-file "pox-mail/smtp" path: "scm/pox-mail/smtp.scm")
+  ;(scheme-file "pox-notification/stdout" depends: '("pox-notification") path: "scm/pox-notification/stdout.scm")
+  ;(scheme-file "pox-notification/vandusen" depends: '("pox-notification") path: "scm/pox-notification/vandusen")
+  ;(scheme-file "pox-notification/mail" depends: '("pox-notification" "pox-model" "pox-mail") path: "scm/pox-notification/mail"))
+
 
 (define-system pox
   (scheme-file "downtime")
-  (scheme-file "pox-db")
-  (scheme-file "pox-notification" depends: '("pox-db" "pox-db/helpers" "downtime"))
-  (scheme-file "pox-model" depends: '("pox-db" "pox-db/helpers" "pox-notification" "downtime"))
+  (scheme-file "pox-notification" depends: '("pox-db/helpers" "downtime"))
+  (scheme-file "pox-model" depends: '("pox-db/helpers" "pox-notification" "downtime"))
   (file "web" includes: '("sxml"))
   (scheme-file "pox-log")
   (scheme-file "pox-query")
-  (scheme-file "pox-server"
-               depends: '("pox-model" "pox-db/helpers" "pox-auth" "pox-log" "pox-query")
-               includes: '("web"))
-  (scheme-file "pox-db/helpers" depends: '("pox-db" "pox-log"))
-  (scheme-file "pox-auth")
+  (scheme-file "pox-db/helpers" depends: '("pox-log"))
   (scheme-file "pox-mail")
   (scheme-file "pox-mail/sendmail")
   (scheme-file "pox-mail/smtp")
